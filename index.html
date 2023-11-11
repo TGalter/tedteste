@@ -3,83 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Animação de Caveiras</title>
+    <title>Animção de Caveira</title>
     <style>
         body {
             margin: 0;
             overflow: hidden;
             background-color: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: 'Arial', sans-serif;
         }
 
-        canvas {
-            display: block;
+        #skull {
+            width: 100px;
+            height: 100px;
+            position: relative;
+        }
+
+        .eye {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #fff;
+            border-radius: 50%;
+        }
+
+        .eye.left {
+            left: 30px;
+            top: 30px;
+        }
+
+        .eye.right {
+            right: 30px;
+            top: 30px;
+        }
+
+        .nose {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 15px 8px 0;
+            border-color: #fff transparent transparent transparent;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .mouth {
+            position: absolute;
+            width: 40px;
+            height: 20px;
+            border: 2px solid #fff;
+            border-top-left-radius: 40px;
+            border-top-right-radius: 40px;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
         }
     </style>
 </head>
 <body>
-    <canvas id="skullCanvas"></canvas>
+    <div id="skull">
+        <div class="eye left"></div>
+        <div class="eye right"></div>
+        <div class="nose"></div>
+        <div class="mouth"></div>
+    </div>
 
     <script>
-        const canvas = document.getElementById('skullCanvas');
-        const ctx = canvas.getContext('2d');
+        const skull = document.getElementById('skull');
 
-        // Configurações do canvas
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        document.addEventListener('mousemove', (e) => {
+            const { clientX: mouseX, clientY: mouseY } = e;
 
-        const skulls = [];
+            const skullRect = skull.getBoundingClientRect();
+            const skullX = skullRect.left + skullRect.width / 2;
+            const skullY = skullRect.top + skullRect.height / 2;
 
-        class Skull {
-            constructor(x, y, speedX, speedY, size) {
-                this.x = x;
-                this.y = y;
-                this.speedX = speedX;
-                this.speedY = speedY;
-                this.size = size;
-            }
+            const deltaX = mouseX - skullX;
+            const deltaY = mouseY - skullY;
 
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = '#ffffff';
-                ctx.fill();
-                ctx.closePath();
-            }
+            const angle = Math.atan2(deltaY, deltaX);
+            const distance = Math.min(skullRect.width / 4, skullRect.height / 4);
 
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
+            const eyeX = Math.cos(angle) * distance;
+            const eyeY = Math.sin(angle) * distance;
 
-                if (this.size > 0.2) this.size -= 0.1;
-
-                this.draw();
-            }
-        }
-
-        function createSkull() {
-            const x = Math.random() * canvas.width;
-            const y = Math.random() * canvas.height;
-            const speedX = (Math.random() - 0.5) * 2;
-            const speedY = (Math.random() - 0.5) * 2;
-            const size = Math.random() * 30 + 10;
-
-            skulls.push(new Skull(x, y, speedX, speedY, size));
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            skulls.forEach(skull => {
-                skull.update();
+            document.querySelectorAll('.eye').forEach((eye) => {
+                eye.style.transform = `translate(${eyeX}px, ${eyeY}px)`;
             });
-
-            if (Math.random() < 0.05) {
-                createSkull();
-            }
-        }
-
-        animate();
+        });
     </script>
 </body>
 </html>
