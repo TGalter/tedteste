@@ -1,12 +1,85 @@
- <!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="pt-br">
 <head>
-<title>Page Title</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animação de Caveiras</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #111;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
 </head>
 <body>
+    <canvas id="skullCanvas"></canvas>
 
-<h1>This is a Heading</h1>
-<p>This is a paragraph.</p>
+    <script>
+        const canvas = document.getElementById('skullCanvas');
+        const ctx = canvas.getContext('2d');
 
+        // Configurações do canvas
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const skulls = [];
+
+        class Skull {
+            constructor(x, y, speedX, speedY, size) {
+                this.x = x;
+                this.y = y;
+                this.speedX = speedX;
+                this.speedY = speedY;
+                this.size = size;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.size > 0.2) this.size -= 0.1;
+
+                this.draw();
+            }
+        }
+
+        function createSkull() {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height;
+            const speedX = (Math.random() - 0.5) * 2;
+            const speedY = (Math.random() - 0.5) * 2;
+            const size = Math.random() * 30 + 10;
+
+            skulls.push(new Skull(x, y, speedX, speedY, size));
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            skulls.forEach(skull => {
+                skull.update();
+            });
+
+            if (Math.random() < 0.05) {
+                createSkull();
+            }
+        }
+
+        animate();
+    </script>
 </body>
-</html> 
+</html>
